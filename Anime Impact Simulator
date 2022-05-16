@@ -1,0 +1,176 @@
+local HUMRP = game.Players.LocalPlayer.Character:WaitForChild("HumanoidRootPart")
+for i,v in pairs(game.CoreGui:GetChildren()) do
+   if v:FindFirstChild("Main") and v.Main:FindFirstChild("MainHeader") then
+       v:Destroy()
+       getgenv().automana = false
+       getgenv().autoexchange = false
+       getgenv().autotrain = false
+       getgenv().offer = 1
+       getgenv().autobuyranks = false
+       getgenv().autoopeneggs = false
+       getgenv().autobuyupgrades = false
+       getgenv().area = "PIRATE"
+       getgenv().egg = "PIRATE"
+    end   
+end    
+local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/xHeptc/Kavo-UI-Library/main/source.lua"))()
+local Window = Library.CreateLib("Anime Impact", "Synapse")
+local Main = Window:NewTab("Main")
+local MainSec = Main:NewSection("Main")
+local Teleport = Window:NewTab("Teleport")
+local TeleportSec = Teleport:NewSection("Teleport")
+local Cards = Window:NewTab("Cards")
+local CardsSec = Cards:NewSection("Cards")
+local Misc = Window:NewTab("Misc")
+local MiscSec = Misc:NewSection("Misc")
+local trainer = workspace._SYSTEM._INTERACT.Train
+MainSec:NewToggle("Auto Mana","Will automaticly get mana",function(t)
+getgenv().automana = t
+spawn(function()
+while getgenv().automana == true do
+wait()
+game:GetService("ReplicatedStorage").Remotes.TappingEvent:FireServer()
+end
+end)
+end) 
+MainSec:NewToggle("Auto Exchange","Will automaticly exchange mana to energy",function(t)
+getgenv().autoexchange = t
+spawn(function()
+while getgenv().autoexchange == true do
+wait()
+local args = {
+    [1] = "Exchange",
+    [2] = getgenv().offer
+}
+
+game:GetService("ReplicatedStorage").Remotes.ClientRemote:InvokeServer(unpack(args))
+end
+end)
+end) 
+MainSec:NewToggle("Auto Train","Will automaticly Train mana gain",function(t)
+getgenv().autotrain = t
+spawn(function()
+while getgenv().autotrain == true do
+HUMRP.CFrame = trainer.CFrame + Vector3.new(0,-10,0)
+local args = {
+    [1] = "Train",
+    [2] = trainer
+}
+game:GetService("ReplicatedStorage").Remotes.ClientRemote:InvokeServer(unpack(args))
+end
+end)
+end) 
+MainSec:NewToggle("Auto Rank","Will buy ranks automaticly",function(t)
+    getgenv().autobuyranks = t
+    spawn(function()
+    while getgenv().autobuyranks do
+        for i,v in pairs(game:GetService("Players").LocalPlayer.PlayerGui.Main.CenterFrame.Upgrade.Ranks.Container.Ranks:GetChildren()) do
+          if v:IsA("TextButton") then
+local args = {
+    [1] = "BuyRank",
+    [2] = tonumber(v.Name)
+}
+
+game:GetService("ReplicatedStorage").Remotes.ClientRemote:InvokeServer(unpack(args))
+              
+          end      
+       end
+    end  
+    end)
+end)    
+MainSec:NewToggle("Auto Upgrade","Will Buy all Upgrades By itself",function(t)
+    getgenv().autobuyupgrades = t
+    spawn(function()
+        while getgenv().autobuyupgrades do
+local args = {
+    [1] = "BuyUpgrade",
+    [2] = "Walk Speed"
+}
+
+game:GetService("ReplicatedStorage").Remotes.ClientRemote:InvokeServer(unpack(args))
+local args = {
+    [1] = "BuyUpgrade",
+    [2] = "Mana Multiplier"
+}
+
+game:GetService("ReplicatedStorage").Remotes.ClientRemote:InvokeServer(unpack(args))
+local args = {
+    [1] = "BuyUpgrade",
+    [2] = "More Storage"
+}
+
+game:GetService("ReplicatedStorage").Remotes.ClientRemote:InvokeServer(unpack(args))
+local args = {
+    [1] = "BuyUpgrade",
+    [2] = "Energy Multiplier"
+}
+
+game:GetService("ReplicatedStorage").Remotes.ClientRemote:InvokeServer(unpack(args))
+local args = {
+    [1] = "BuyUpgrade",
+    [2] = "More Equip"
+}
+
+game:GetService("ReplicatedStorage").Remotes.ClientRemote:InvokeServer(unpack(args))
+        end    
+    end)    
+end)    
+MainSec:NewDropdown("Choose Offer for exchange", "Choose Offer for you exchange", {"1", "2", "3","4","5","6","7","8","9","10","11","12","13","14","15","16","17","18","19","20","21","22","23","24","25","26"}, function(currentOption)
+    getgenv().offer = tonumber(currentOption)
+end)
+MiscSec:NewButton("Remove Notifications","Will Remove notifications",function()
+   if game:GetService("Players").LocalPlayer.PlayerGui.Main.CenterFrame:FindFirstChild("Error") then
+   game:GetService("Players").LocalPlayer.PlayerGui.Main.CenterFrame:FindFirstChild("Error"):Destroy()
+   end
+end)
+MiscSec:NewToggle("Remove Water System","Removing Water System Will make Auto Train Better",function(t)
+    if t then
+       for i,v in pairs(game:GetService("Workspace")["_SYSTEM"]["_WATER"]:GetChildren()) do
+           v.CanTouch = false
+        end   
+       else
+        for i,v in pairs(game:GetService("Workspace")["_SYSTEM"]["_WATER"]:GetChildren()) do
+           v.CanTouch = true
+        end    
+    end    
+end)    
+CardsSec:NewDropdown("Choose Card", "Choose Card to buy", {"PIRATE","SOUL","SHURIKEN","SLAYER","DRAGON","JUJUTSU","S","S-SECRET"}, function(currentOption)
+    getgenv().egg = currentOption
+end)
+CardsSec:NewButton("Open Once","Will Open Card Once",function(t)
+HUMRP.CFrame = game:GetService("Workspace")["_SYSTEM"]["_EGG"][getgenv().egg].EGG.Electricity.CFrame  + Vector3.new(0,-7,0)
+wait(0.1)
+local args = {
+    [1] = "EGG",
+    [2] = getgenv().egg,
+    [3] = "1",
+    [4] = {}
+}
+
+game:GetService("ReplicatedStorage").Remotes.ClientRemote:InvokeServer(unpack(args))
+end)
+CardsSec:NewToggle("Auto Open","Will be opening Cards Constantly",function(t)
+    getgenv().autoopeneggs = t
+    spawn(function()
+    while getgenv().autoopeneggs do
+    wait()
+    HUMRP.CFrame = game:GetService("Workspace")["_SYSTEM"]["_EGG"][getgenv().egg].EGG.Electricity.CFrame   + Vector3.new(0,-7,0)  
+    wait(0.1)
+    local args = {
+        [1] = "EGG",
+        [2] = getgenv().egg,
+        [3] = "1",
+        [4] = {}
+    }
+    
+    game:GetService("ReplicatedStorage").Remotes.ClientRemote:InvokeServer(unpack(args))
+    end    
+    end)    
+end)
+
+TeleportSec:NewDropdown("Choose Area", "Choose Area to teleport", {"PIRATE","SOUL","SHURIKEN","SLAYER","DRAGON","JUJUTSU","S"}, function(currentOption)
+    getgenv().area = currentOption
+end)
+TeleportSec:NewButton("Teleport","Click this to teleport",function()
+    HUMRP.CFrame = game:GetService("Workspace")["_SYSTEM"]["_AREAs"][getgenv().area].CFrame
+end)
